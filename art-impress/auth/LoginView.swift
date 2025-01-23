@@ -9,8 +9,8 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var appViewModel: AppViewModel
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @State  var email: String = ""
+    @State  var password: String = ""
     @State private var isValidEmail = false
     @State private var showAlert = false
     @State private var alertMessage = ""
@@ -51,8 +51,7 @@ struct LoginView: View {
                 }
             })
 
-            .foregroundColor(.black)
-            .font(.callout)
+//            .foregroundColor(.black)
             .buttonStyle(.bordered)
             .disabled(!isValidEmail || email.isEmpty || password.isEmpty)
             
@@ -116,8 +115,5 @@ struct LoginView: View {
 
 
 #Preview {
-    let cv =  LoginView()
-    //    cv.email="art@impress.com"
-    //    cv.password="123"
-    cv
+      LoginView(email: "art@impress.com", password: "123")
 }
