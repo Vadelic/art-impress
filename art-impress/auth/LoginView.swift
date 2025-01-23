@@ -15,7 +15,7 @@ struct LoginView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var showSecondScreen = false
-  
+    
     var body: some View {
         VStack(alignment: .center, spacing: 10)
         {
@@ -27,7 +27,7 @@ struct LoginView: View {
             TextField("login or e-mail", text: $email)
                 .frame(width: 300.0)
                 .font(.system(size: 18) )
-               .autocapitalization(.none)
+                .autocapitalization(.none)
                 .onChange(of: email) {oldState, newState in
                     validateEmail()
                 }
@@ -42,7 +42,7 @@ struct LoginView: View {
             SecureField("password", text: $password)
                 .frame(width: 300.0)
                 .font(.system(size: 18) )
-              
+            
             
             Button("Login",action: {
                 Task {
@@ -50,7 +50,7 @@ struct LoginView: View {
                     appViewModel.isLogin = true
                 }
             })
-
+            
             .foregroundColor(.black)
             .buttonStyle(.bordered)
             .disabled(!isValidEmail || email.isEmpty || password.isEmpty)
@@ -115,5 +115,5 @@ struct LoginView: View {
 
 
 #Preview {
-      LoginView(email: "art@impress.com", password: "123")
+    LoginView(email: "art@impress.com", password: "123")
 }
