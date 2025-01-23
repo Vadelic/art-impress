@@ -51,7 +51,7 @@ struct LoginView: View {
                 }
             })
 
-//            .foregroundColor(.black)
+            .foregroundColor(.black)
             .buttonStyle(.bordered)
             .disabled(!isValidEmail || email.isEmpty || password.isEmpty)
             
