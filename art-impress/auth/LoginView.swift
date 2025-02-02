@@ -6,30 +6,45 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
+
 
 struct LoginView: View {
     @EnvironmentObject var appViewModel: AppViewModel
+    @Environment(\.colorScheme) var colorScheme // Получаем текущую схему устройства
     @State  var email: String = ""
     @State  var password: String = ""
-    @State private var isValidEmail = false
+    @State  var isValidEmail = false
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var showSecondScreen = false
-    
+  
+  
     var body: some View {
         VStack(alignment: .center, spacing: 10)
         {
-            Image("logo")
+            
+            let logoImg =  Image("logo")
                 .resizable()
-                .frame(width: /*@START_MENU_TOKEN@*/100.0/*@END_MENU_TOKEN@*/, height: /*@START_MENU_TOKEN@*/100.0/*@END_MENU_TOKEN@*/)
+                .frame(width: 200, height: 200)
                 .clipShape(Circle())
+            
+            if colorScheme == .dark {
+                logoImg.colorInvert()
+            }else{
+                logoImg
+            }
             
             TextField("login or e-mail", text: $email)
                 .frame(width: 300.0)
-                .font(.system(size: 18) )
+                .font(.system(size: 14))
+                .padding([.bottom, .trailing, .leading   ], 8)
                 .autocapitalization(.none)
                 .onChange(of: email) {oldState, newState in
-                    validateEmail()
+                    //                    isValidEmail =  validateEmail(email: email)
+                    isValidEmail =  true
                 }
             
             
@@ -41,27 +56,51 @@ struct LoginView: View {
             
             SecureField("password", text: $password)
                 .frame(width: 300.0)
-                .font(.system(size: 18) )
+                .font(.system(size: 14))
+                .padding([.bottom, .trailing, .leading   ], 8)
             
-            
+// login with email
             Button("Login",action: {
-                Task {
-                    await sendDataToService()
-                    appViewModel.isLogin = true
+                signInWithEmail(email: email, password: password) { (verified, status) in
+                    if !verified {
+                        self.alertMessage = status
+                        self.showAlert.toggle()
+                    }
+                    else{
+                   // appViewModel.user = user
+                        UserDefaults.standard.setValue(true, forKey: "isLogin")
+                        appViewModel.isLogin = true
+                        
+                    }
                 }
             })
-            
-            .foregroundColor(.black)
             .buttonStyle(.bordered)
             .disabled(!isValidEmail || email.isEmpty || password.isEmpty)
             
-            Button("Sign up",action: {
-                Task {
-                    showSecondScreen = true
+           
+//Continue with Google
+            Button("Continue with Google",action: {Task {
+                do {
+                    try await Authentication().googleOauth()
+                } catch AuthenticationError.runtimeError(let errorMessage) {
+                    //  err = errorMessage
+                    print(errorMessage)
                 }
-            })
+            }  })
+            .buttonStyle(.bordered)
+      
+            
+            HStack(spacing: 8){
+                Text("Don't Have An Account ?").foregroundColor(Color.gray.opacity(0.5))
+                Button("Sign up",action: {
+                    Task {
+                        showSecondScreen = true
+                    }
+                })}
+            
+            
             .sheet(isPresented: $showSecondScreen) {
-                RegistrationForm()
+                RegistrationForm() .environmentObject(appViewModel)
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text(alertMessage), dismissButton: .default(Text("OK")))
@@ -69,51 +108,32 @@ struct LoginView: View {
             
             
         }.textFieldStyle(.roundedBorder)
-        
-    }
-    func validateEmail() {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        
-        if let _ = email.range(of: emailRegEx, options: .regularExpression) {
-            isValidEmail = true
-        } else {
-            isValidEmail = false
-        }
-    }
-    func sendDataToService() async {
-        // Имитация отправки данных на сервер
-        do {
-            let url = URL(string: "https://art-impress.com/auth/login")!
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-            let body: [String: String] = ["email": email, "password": password]
-            let jsonBody = try JSONSerialization.data(withJSONObject: body, options: [])
-            request.httpBody = jsonBody
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                self.alertMessage = "Ошибка при отправке данных. Пожалуйста, попробуйте позже."
-                self.showAlert = true
-                return
-            }
-            
-            print("Данные успешно отправлены!")
-        } catch {
-            self.alertMessage = "Произошла ошибка при обработке запроса: \(error.localizedDescription)"
-            self.showAlert = true
-        }
+           
     }
     
+    
+    
+}
+
+// MARK: - SineIn Google
+
+func signInWithGoogle(completion: @escaping (Bool,String)->Void){
+    completion(true, "noname")
+ }
+
+// MARK: - SineIn mail
+func signInWithEmail(email: String,password : String,completion: @escaping (Bool,String)->Void){
+    Auth.auth().signIn(withEmail: email, password: password) { (res, err) in
+        if err != nil{
+            completion(false,(err?.localizedDescription)!)
+            return
+        }
+        completion(true,(res?.user.email)!)
+    }
 }
 
 
 
-
 #Preview {
-    LoginView(email: "art@impress.com", password: "123")
+    LoginView(email: "art@impress.com", password: "123", isValidEmail:true)
 }

@@ -6,8 +6,15 @@
 //
 
 import Foundation
+import FirebaseAuth
 
 class AppViewModel: ObservableObject{
-    @Published var isLogin = false
-    
+    @Published var isLogin =  UserDefaults.standard.value(forKey: "isLogin") as? Bool ?? false
+    @Published var user :User?
 }
+
+//struct User{
+//    var name:String
+//    var login:String
+//    var imageName:String?
+//}

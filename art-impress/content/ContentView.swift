@@ -1,18 +1,26 @@
 //
-//  ContentView.swift
+//  ContentGalleryView.swift
 //  art-impress
 //
-//  Created by Vadim Komyshenets on 23.01.2025.
+//  Created by Vadim Komyshenets on 24.01.2025.
 //
 
 import SwiftUI
 
 struct ContentView: View {
+    
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+       
+            VStack{
+                SearchBarView()
+                GalleryView()
+            }
+        }
+}
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView()
+        }
     }
-}
 
-#Preview {
-    ContentView()
-}
