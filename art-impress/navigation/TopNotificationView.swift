@@ -15,10 +15,12 @@ struct TopNotificationView: View {
     let type: NotificationType
     
     var body: some View {
-        ZStack(alignment: .top) {
+        VStack(spacing: 0) {
             if isShowing {
                 Rectangle()
+                    
                     .fill(type.backgroundColor)
+                    .frame(height: 60)
                     .overlay(
                         Text(message)
                             .foregroundColor(type.textColor)
@@ -26,20 +28,24 @@ struct TopNotificationView: View {
                             .multilineTextAlignment(.center)
                             .padding()
                     )
-                    .transition(.move(edge: .top))
-                    .animation(.easeInOut(duration: 0.3), value: isShowing)
+                    
+                    .opacity(isShowing ? 1 : 0)
+
+                    .animation(.easeInOut(duration: 0.8), value: isShowing)
+                    
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             withAnimation {
                                 isShowing = false
                             }
                         }
                     }
+                    .padding([.leading, .trailing], 10)
             }
             
-            EmptyView()
+            Spacer(minLength: 0)
         }
-        .ignoresSafeArea(edges: .top)
+//        .ignoresSafeArea(edges: .top)
     }
 }
 

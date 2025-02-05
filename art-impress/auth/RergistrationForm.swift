@@ -24,6 +24,7 @@ struct RegistrationForm: View {
                 .font(.title)
             
             TextField("login or email", text: $email)
+                .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .font(.system(size: 14))
                 .padding([.bottom, .trailing, .leading   ], 8)

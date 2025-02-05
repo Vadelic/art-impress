@@ -10,11 +10,12 @@ import SwiftUI
 struct ImageLoadScreen: View {
     @State  var showImagePicker = true
     @State  var selectedImage: UIImage?
-    @State private var isUploading = false
-//    // URL сервера, куда отправляется изображение
-//    let serverURL = URL(string: "http://144.21.37.189:35035/v1/images/upload")!
+    @State  var isUploading = false
+    @StateObject var viewModel = ImageTagScreenViewModel()
+    @State var showErrorNotification = false
+    @State var messageErrorNotification = ""
     
-    @State  var imageTags = ImageTags()
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .center){
@@ -34,6 +35,13 @@ struct ImageLoadScreen: View {
                 
                 
                 if (selectedImage != nil){
+                    TagView(imageTags: Binding(get: { viewModel.imageTags ?? ImageTags(tagGroups: []) },
+                                               set: { viewModel.imageTags = $0 }),
+                            simpleTags: Binding(get: { viewModel.simpleTags ?? [] },
+                                                set: { viewModel.simpleTags = $0 })
+                    )
+                    .padding()
+                    .onAppear {viewModel.fetchImageTags()}
                     
                 }
                 
@@ -42,57 +50,46 @@ struct ImageLoadScreen: View {
                     ProgressView()
                 } else {
                     Button(action: {
+                        isUploading=true
                         guard let image = selectedImage,
                               let imageData = image.jpegData(compressionQuality: 1.0)
                         else {return}
                         
-                        let body = UploadImageRequest(id: UUID().uuidString,
-                                                      hashTags: ["body:arm"])
+                        let body = UploadImageRequest(structuredTags: viewModel.imageTags,tags: viewModel.simpleTags)
                         
                         uploadImage(imageData: imageData, request: body) { response in
+                            switch response {
+                            case .success(_):
+                                messageErrorNotification = String("OK")
+                            case .failure(let failure):
+                                messageErrorNotification = String("Error: \(failure)")
+                            }
+                            showErrorNotification.toggle()
                             print(response)
-                        }})
+                            isUploading=false
+                        }
+                        isUploading=false
+                        
+                    })
                     {
                         Text("Send image")
+                            .foregroundColor(.black)
+                            .padding(10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(Color.green.opacity( 0.5))
+                            )
                     }
                 }
-            }}
+            }
+            .overlay(TopNotificationView(isShowing: $showErrorNotification,
+                                         message: messageErrorNotification,
+                                         type: .error))
+            
+        }
     }
-    
-    //    func uploadImage() {
-    //        guard let image = selectedImage,
-    //              let imageData = image.jpegData(compressionQuality: 1.0)
-    //             else {
-    //            return
-    //        }
-    //
-    //        isUploading = true
-    //
-    //        var request = URLRequest(url: serverURL)
-    //        request.httpMethod = "POST"
-    //        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    //        let task = URLSession.shared.uploadTask(with: request, from: imageData) { data, response, error in
-    //            if let error = error {
-    //                print("Ошибка загрузки изображения: \(error.localizedDescription)")
-    //                return
-    //            }
-    //
-    //            if let response = response as? HTTPURLResponse,
-    //               (200...299).contains(response.statusCode) {
-    //                print("Успешная загрузка изображения!")
-    //            } else {
-    //                print("Сервер вернул ошибку.")
-    //            }
-    //            DispatchQueue.main.async {
-    //                self.isUploading = false
-    //            }
-    //        }
-    //
-    //        task.resume()
-    //    }
-    
 }
 
 #Preview {
-    ImageLoadScreen(showImagePicker: false)
+    ImageLoadScreen(showImagePicker: false, selectedImage: UIImage())
 }

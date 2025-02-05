@@ -9,6 +9,7 @@ import Foundation
 import FirebaseAuth
 import SwiftUICore
 private var host =  "http://144.21.37.189:35035"
+//private var host =  "http:/localhost:8080"
 var mock = true
 func requestLogin( email:String,  pass:String) async throws ->User?{
 
@@ -30,7 +31,6 @@ func requestLogin( email:String,  pass:String) async throws ->User?{
           (200...299).contains(httpResponse.statusCode) else {
         print( "Ошибка при отправке данных. Пожалуйста, попробуйте позже.")
         return nil
-        
     }
     
     print("Данные успешно отправлены!")
@@ -83,10 +83,9 @@ func uploadImage(imageData: Data, request: UploadImageRequest, completionHandler
         }
         
         guard let httpResponse = response as? HTTPURLResponse else {return}
-        print(httpResponse.statusCode)
+        print(httpResponse)
+        
         if !(200...299).contains(httpResponse.statusCode){
-            
-            
             completionHandler(.failure(NetworkError.badResponse))
             return
         }

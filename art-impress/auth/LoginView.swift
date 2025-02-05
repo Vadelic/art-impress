@@ -38,6 +38,7 @@ struct LoginView: View {
             }
             
             TextField("login or e-mail", text: $email)
+                .keyboardType(.emailAddress)
                 .frame(width: 300.0)
                 .font(.system(size: 14))
                 .padding([.bottom, .trailing, .leading   ], 8)
