@@ -6,17 +6,29 @@
 //
 
 import SwiftUI
+import FirebaseCore
+import GoogleSignIn
 
 @main
 struct art_impressApp: App {
-   @ObservedObject var appViewModel = AppViewModel()
+    @ObservedObject var appViewModel = AppViewModel()
+   
+    init() {
+           // Firebase initialization
+           FirebaseApp.configure()
+       }
+
     var body: some Scene {
         WindowGroup {
+             
             if appViewModel.isLogin{
-            ContentView()
+                OrganizerView()
+                    .environmentObject(appViewModel)
+              
             } else{
                 LoginView()
                     .environmentObject(appViewModel)
+            
             }
         }
     }
