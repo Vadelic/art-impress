@@ -1,0 +1,51 @@
+{
+    "description": "Вид произведения",
+    "children": [
+        {
+            "description": "Фотография",
+            "children": null,
+            "selected": false,
+            "nodeType": "chain"
+        },
+        {
+            "description": "Ещё какая-то",
+            "children": null,
+            "selected": false,
+            "nodeType": "chain"
+        },
+        {
+            "description": "Живопись",
+            "children": [
+                {
+                    "description": "монументальная",
+                    "children": [
+                        {
+                            "description": "фреска",
+                            "children": null,
+                            "selected": false,
+                            "nodeType": "chain"
+                        },
+                        {
+                            "description": "асекко",
+                            "children": null,
+                            "selected": false,
+                            "nodeType": "chain"
+                        }
+                    ],
+                    "selected": false,
+                    "nodeType": "chain"
+                },
+                {
+                    "description": "Станковая",
+                    "children": null,
+                    "selected": false,
+                    "nodeType": "chain"
+                }
+            ],
+            "selected": false,
+            "nodeType": "chain"
+        }
+    ],
+    "selected": false,
+    "nodeType": "chain"
+}

@@ -1,6 +1,27 @@
 import Foundation
 
 struct MockStore {
+    static var characteristics = CharacteristicResponse(
+        [
+            ValueNode("Автор", "Василий Пупкин"),
+            ValueNode("Время создания", 1044,1055),
+            MultiSelectNode("Материал", [SelectableNode(value:"фреска"),
+                                         SelectableNode(value:"асекко")
+                                        ]
+                           ),
+            ChainNode("Вид произведения", [ChainNode("Фотография"),
+                                           ChainNode("Ещё какая-то"),
+                                           ChainNode("Живопись",[ChainNode("монументальная",
+                                                                           [ChainNode("фреска"),
+                                                                            ChainNode("асекко")
+                                                                           ]
+                                                                          ),
+                                                                 ChainNode("Станковая")])
+                                          ]
+                     )
+        ]
+    )
+    
     static var cards = [
         Card(title: "Italy"),
         Card(title: "England"),

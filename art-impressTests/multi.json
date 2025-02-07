@@ -1,0 +1,14 @@
+{
+    "description": "Материал",
+    "list": [
+        {
+            "value": "фреска",
+            "selected": true
+        },
+        {
+            "value": "асекко",
+            "selected": true
+        }
+    ],
+    "nodeType": "multi"
+}
